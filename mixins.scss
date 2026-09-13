@@ -1,0 +1,17 @@
+$neon-pink: #ff007f;
+$neon-cyan: #00f0ff;
+$dark-abyss: #020208;
+
+@mixin cyberpunk-glow-border($accent-color) {
+    border: 2px solid $accent-color;
+    box-shadow: 0 0 15px rgba($accent-color, 0.35);
+}
+
+.dept-card-premium {
+    background: #09091e;
+    @include cyberpunk-glow-border($neon-cyan);
+    
+    &:hover {
+        @include cyberpunk-glow-border($neon-pink);
+    }
+}

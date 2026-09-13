@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AltCampus - Doomlearn Media Engine</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        :root { 
+            --bg: #020208; 
+            --card-bg: #09091e; 
+            --primary: #ff007f; 
+            --accent: #00f0ff;  
+            --laser-green: #39ff14; 
+            --text-main: #f3f4f6; 
+            --text-muted: #a0aec0; 
+            --border: rgba(0, 240, 255, 0.2); 
+        }
+        body { background-color: var(--bg); color: var(--text-main); overflow-x: hidden; padding-bottom: 5rem; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 5%; border-bottom: 2px solid var(--accent); background: #020208; position: sticky; top: 0; z-index: 100; box-shadow: 0 0 20px rgba(0, 240, 255, 0.2); }
+        .logo { font-size: 1.5rem; font-weight: 900; background: linear-gradient(to right, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 10px rgba(255, 0, 127, 0.5); text-decoration: none; }
+        .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 1rem; text-transform: uppercase; }
+        .nav-links a.active { color: var(--accent); text-shadow: 0 0 8px var(--accent); }
+        .price-badge { background: rgba(57, 255, 20, 0.1); border: 2px solid var(--laser-green); color: var(--laser-green); padding: 0.5rem 1.2rem; border-radius: 9999px; font-weight: 900; font-size: 1rem; text-transform: uppercase; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 1.5rem; }
+        
+        .score-hud { background: rgba(255, 255, 255, 0.02); border: 2px dashed var(--accent); border-radius: 12px; padding: 1.2rem; margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .hud-metric { font-size: 1.1rem; font-weight: 800; color: #fff; }
+        .hud-count { color: var(--laser-green); font-size: 1.6rem; font-family: monospace; text-shadow: 0 0 10px var(--laser-green); }
+        
+        /* Dual Grid: Sector Selector Dashboard + Video Feed Player */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 3rem; margin-top: 2.5rem; align-items: start; }
+        .panel-card { background-color: var(--card-bg); border: 2px solid var(--border); border-radius: 20px; padding: 1.75rem; box-shadow: 0 4px 25px rgba(0,0,0,0.5); min-height: 560px; display: flex; flex-direction: column; }
+        .panel-card h2 { font-size: 1.4rem; font-weight: 900; margin-bottom: 0.5rem; color: #fff; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        
+        /* Clickable Career Tiles */
+        .sector-row { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+        .sector-item { background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); padding: 1rem; border-radius: 10px; cursor: pointer; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; }
+        .sector-item:hover { background: rgba(0, 240, 255, 0.05); border-color: var(--accent); transform: translateX(5px); }
+        .sector-name { font-weight: 800; color: #fff; }
+        .sector-xp { font-family: monospace; color: var(--laser-green); font-size: 0.85rem; }
+
+        /* Video Reel Window */
+        .video-reel-frame { width: 100%; max-width: 360px; height: 560px; margin: 0 auto; background: #000; border: 4px solid var(--primary); border-radius: 28px; position: relative; overflow: hidden; box-shadow: 0 0 35px rgba(255, 0, 127, 0.4); display: flex; flex-direction: column; justify-content: flex-end; }
+        .video-canvas-backdrop { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.25; background: linear-gradient(180deg, rgba(0,240,255,0.1) 0%, rgba(255,0,127,0.1) 100%); z-index: 1; pointer-events: none; }
+        .video-overlay-data { position: relative; z-index: 5; padding: 1.5rem; text-align: left; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 70%, transparent 100%); width: 100%; }
+        .creator-tag { font-size: 0.9rem; font-weight: 800; color: var(--accent); margin-bottom: 0.4rem; }
+        .video-caption { font-size: 1.05rem; color: #fff; font-weight: 700; line-height: 1.4; margin-bottom: 1.2rem; }
+        .factoholic-subtitles { position: absolute; top: 35%; left: 5%; width: 90%; text-align: center; z-index: 10; transform: translateY(-50%); pointer-events: none; }
+        .factoholic-subtitles span { background: #ffff00; color: #000; font-size: 1.6rem; font-weight: 900; padding: 0.3rem 0.8rem; text-transform: uppercase; letter-spacing: -0.5px; box-shadow: 5px 5px 0px #000; display: inline-block; word-break: break-word; }
+        .video-action-pane { display: flex; gap: 0.75rem; width: 100%; }
+        .action-pill { flex: 1; background: var(--primary); color: #fff; border: none; font-weight: 800; padding: 0.8rem; border-radius: 10px; cursor: pointer; text-transform: uppercase; font-size: 0.85rem; transition: all 0.2s; }
+        .action-pill.next-btn { background: var(--accent); color: #020208; }
+        .action-pill:hover { transform: translateY(-2px); }
+
+        .toast-engine { position: fixed; bottom: 2rem; right: 2rem; z-index: 1000; display: flex; flex-direction: column; gap: 0.75rem; }
+        .toast { background: #111827; border: 2px solid var(--primary); color: white; padding: 1rem 1.5rem; border-radius: 8px; font-weight: 700; font-size: 0.95rem; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body>
+    <div class="toast-engine" id="toastContainer"></div>
+
+    <nav>
+        <a href="/" class="logo">ALTCAMPUS // UNIVERSAL</a>
+        <ul class="nav-links">
+            <li><a href="/" class="active">Home Reels</a></li>
+            <li><a href="/quiz">Competency Arena</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <!-- Dashboard Main HUD -->
+        <div class="score-hud">
+            <div class="hud-metric">🎓 Active Career Core: <span style="color: var(--accent);" id="activeDashboardTrack">Drone Logistics</span></div>
+            <div class="hud-metric">⚡ Career Competency XP: <span class="hud-count" id="scoreCounter">0000</span></div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Left Side: Main Core Sector Dashboard Navigation Node -->
+            <div class="panel-card">
+                <h2>🎛️ Career Department Core</h2>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Select your active university channel sector grid matrix to update your learning streams dynamically.</p>
+                
+                <div class="sector-row">
+                    <div class="sector-item" onclick="switchDashboardSector('drone')">
+                        <div>
+                            <div class="sector-name">🚀 Commercial Drone Logistics</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">C Hardcoding, MATLAB Sims, Aero Math</div>
+                        </div>
+                        <span class="sector-xp">ACTIVE</span>
+                    </div>
+                    <div class="sector-item" onclick="switchDashboardSector('trading')">
+                        <div>
+                            <div class="sector-name">📊 Automated Stock Trading</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Go Gateways, SQL Ledgers, Scala Streams</div>
+                        </div>
+                        <span class="sector-xp" style="color:var(--text-muted);">SELECT</span>
+                    </div>
+                    <div class="sector-item" onclick="switchDashboardSector('marketing')">
+                        <div>
+                            <div class="sector-name">🎯 Algorithmic Digital Marketing</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Python AI roadmaps, HTML5/CSS3 Interfaces</div>
+                        </div>
+                        <span class="sector-xp" style="color:var(--text-muted);">SELECT</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: The Unhinged Video Reel Viewport Container -->
+            <div class="video-reel-frame">
+                <div class="video-canvas-backdrop" id="videoGlow"></div>
+                <div class="factoholic-subtitles">
+                    <span id="factoholicSubs">JOYSTICKS ARE LIES!</span>
+                </div>
+                <div class="video-overlay-data">
+                    <div class="creator-tag">🔥 <span id="videoCategory">Drone Logistics Core</span></div>
+                    <div class="video-caption" id="videoDescription">Commercial drone flight crews don't play video games, ra! They run real hardware encoders using direct C socket memory addresses.</div>
+                    <div class="video-action-pane">
+                        <button class="action-pill" onclick="simulateLike()">Like ❤️</button>
+                        <button class="action-pill next-btn" onclick="scrollNextVideo()">Next Video 🔄</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="doom_engine.js"></script>
+</body>
+</html>
+
+
+
+
