@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/arena_logic.js",
+      "dest": "/arena_logic.js"
+    },
+    {
+      "src": "/doom_engine.js",
+      "dest": "/doom_engine.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "server.js"
+    }
+  ]
+}
