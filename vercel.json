@@ -8,12 +8,12 @@
   ],
   "routes": [
     {
-      "src": "/arena_logic.js",
-      "dest": "/arena_logic.js"
-    },
-    {
       "src": "/doom_engine.js",
       "dest": "/doom_engine.js"
+    },
+    {
+      "src": "/arena_logic.js",
+      "dest": "/arena_logic.js"
     },
     {
       "src": "/(.*)",
@@ -21,3 +21,4 @@
     }
   ]
 }
+
